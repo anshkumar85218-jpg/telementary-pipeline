@@ -1,0 +1,22 @@
+$kind: http-request
+description: ""
+url: http://localhost:5000/api/irrigation/pump
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "pump": "OFF"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Response time is under 500 ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+
+      pm.test("Status code is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+    language: text/javascript
+order: 8000

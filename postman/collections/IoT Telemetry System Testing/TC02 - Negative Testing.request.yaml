@@ -1,0 +1,10 @@
+$kind: http-request
+url: http://localhost:5000/invalid-route
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Data not found", function () {
+          pm.response.to.have.status(404);
+      });
+order: 3000

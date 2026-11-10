@@ -1,0 +1,21 @@
+$kind: http-request
+description: ""
+url: http://localhost:5000/api/telemetry
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "deviceId": "sensor-001",
+      "temperature": 28.5,
+      "humidity": 65.2,
+      "soilMoisture": 42.0
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Data successfully ingested", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 4000

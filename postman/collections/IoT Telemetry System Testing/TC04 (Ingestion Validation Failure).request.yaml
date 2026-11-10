@@ -1,0 +1,17 @@
+$kind: http-request
+url: http://localhost:5000/api/telemetry
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "deviceId": "sensor-001",
+      "humidity": 65.2
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Response returns 404 for invalid endpoint", function () {
+          pm.response.to.have.status(404);
+      });
+order: 5000

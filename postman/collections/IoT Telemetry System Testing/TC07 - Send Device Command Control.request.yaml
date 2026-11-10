@@ -1,0 +1,21 @@
+$kind: http-request
+description: ""
+url: http://localhost:5000/api/devices/sensor-001/command
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "action": "trigger_irrigation",
+      "durationSeconds": 30
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Command accepted successfully", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 202]);
+          const res = pm.response.json();
+          pm.expect(res.commandStatus).to.eql("dispatched");
+      });
+    language: text/javascript
+order: 9000

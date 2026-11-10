@@ -1,0 +1,143 @@
+```jsx
+{/* Smart Irrigation Page */}
+{activePage === "Irrigation" && (
+  <section>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div>
+        <h2>Smart Irrigation Control</h2>
+        <p>Monitor live average humidity and manage the simulated irrigation pump.</p>
+      </div>
+
+      <button
+        onClick={loadIrrigationStatus}
+        disabled={irrigationLoading}
+      >
+        <RefreshCw size={16} />
+        Refresh
+      </button>
+    </div>
+
+    {irrigationError && (
+      <p style={{ color: "red" }}>{irrigationError}</p>
+    )}
+
+    {/* Status Cards */}
+    <div
+      style={{
+        display: "flex",
+        gap: "16px",
+        flexWrap: "wrap",
+        marginTop: "20px",
+      }}
+    >
+      <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "10px", minWidth: "160px" }}>
+        <Droplets size={22} />
+        <h3>Average Humidity</h3>
+        <h2>
+          {irrigation.averageHumidity == null
+            ? "Waiting for data..."
+            : `${Number(irrigation.averageHumidity).toFixed(1)}%`}
+        </h2>
+        <p>Average across reporting devices</p>
+      </div>
+
+      <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "10px", minWidth: "160px" }}>
+        <Activity size={22} />
+        <h3>Operating Mode</h3>
+        <h2>{irrigation.mode}</h2>
+      </div>
+
+      <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "10px", minWidth: "160px" }}>
+        <Power size={22} />
+        <h3>Simulated Pump</h3>
+        <h2>{irrigation.pump}</h2>
+      </div>
+    </div>
+
+    {/* Automatic Irrigation Rules */}
+    <div style={{ marginTop: "24px", padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
+      <h3>Automatic Irrigation Rules</h3>
+      <p>
+        Average humidity below {irrigation.dryThreshold ?? 40}%:
+        the pump turns ON automatically.
+      </p>
+      <p>
+        Average humidity at or above {irrigation.wetThreshold ?? 50}%:
+        the pump turns OFF automatically.
+      </p>
+      <p>
+        Between these thresholds, the pump keeps its previous state.
+      </p>
+      <p>
+        Last updated: {irrigation.lastUpdated
+          ? new Date(irrigation.lastUpdated).toLocaleString()
+          : "Waiting for telemetry"}
+      </p>
+    </div>
+
+    {/* Operating Mode Controls */}
+    <div style={{ marginTop: "24px", padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
+      <h3>Operating Mode</h3>
+      <p>Current mode: <strong>{irrigation.mode}</strong></p>
+
+      <button
+        disabled={irrigationLoading || irrigation.mode === "AUTO"}
+        onClick={() =>
+          sendIrrigationCommand("mode", { mode: "AUTO" })
+        }
+      >
+        Enable AUTO
+      </button>
+
+      <button
+        disabled={irrigationLoading || irrigation.mode === "MANUAL"}
+        onClick={() =>
+          sendIrrigationCommand("mode", { mode: "MANUAL" })
+        }
+        style={{ marginLeft: "8px" }}
+      >
+        Enable MANUAL
+      </button>
+    </div>
+
+    {/* Manual Pump Controls */}
+    <div style={{ marginTop: "24px", padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
+      <h3>Manual Pump Control</h3>
+      <p>
+        Switch to MANUAL mode before controlling the pump yourself.
+      </p>
+
+      <button
+        disabled={
+          irrigationLoading ||
+          irrigation.mode !== "MANUAL" ||
+          irrigation.pump === "ON"
+        }
+        onClick={() =>
+          sendIrrigationCommand("pump", { pump: "ON" })
+        }
+      >
+        <Power size={16} />
+        Turn Pump ON
+      </button>
+
+      <button
+        disabled={
+          irrigationLoading ||
+          irrigation.mode !== "MANUAL" ||
+          irrigation.pump === "OFF"
+        }
+        onClick={() =>
+          sendIrrigationCommand("pump", { pump: "OFF" })
+        }
+        style={{ marginLeft: "8px" }}
+      >
+        <Power size={16} />
+        Turn Pump OFF
+      </button>
+    </div>
+
+    {irrigationLoading && <p>Sending command...</p>}
+  </section>
+)}
+```

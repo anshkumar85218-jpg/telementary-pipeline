@@ -1,0 +1,27 @@
+$kind: http-request
+name: http://localhost:5000/
+description: ""
+url: http://localhost:5000/
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Backend returns correct message", function () {
+          const data = pm.response.json();
+          pm.expect(data.message).to.eql("IoT Telemetry Backend is running");
+      });
+
+      pm.test("Backend status is online", function () {
+          const data = pm.response.json();
+          pm.expect(data.status).to.eql("online");
+      });
+
+      pm.test("Response time is under 1000 ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(1000);
+      });
+    language: text/javascript
+order: 1000
